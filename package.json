@@ -1,8 +1,8 @@
 {
   "name": "tubegate",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
-  "description": "Filter YouTube recommendation cards with user-defined TypeSafe rules.",
+  "description": "Filter YouTube recommendations and Twitter / X posts with user-defined TypeSafe rules.",
   "type": "commonjs",
   "scripts": {
     "test": "tsx --test tests/*.test.ts",

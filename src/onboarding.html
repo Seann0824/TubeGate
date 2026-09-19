@@ -14,11 +14,11 @@
             <span class="ew-mark">◈</span
             ><span
               ><span class="ew-brand-title">TubeGate </span
-              ><span class="ew-brand-sub">YouTube 推荐视频过滤</span></span
+              ><span class="ew-brand-sub">YouTube 与 X 内容过滤</span></span
             >
           </div>
           <h1>把噪声留在视线之外。</h1>
-          <p>检查 YouTube 推荐卡片的文字；命中规则才隐藏，API 异常时放行。</p>
+          <p>检查 YouTube 推荐和 X 帖子的可见文字；命中规则才隐藏，API 异常时放行。</p>
         </header>
         <div class="ew-stepper"><span class="active"></span><span></span><span></span></div>
         <section class="ew-card">
@@ -27,8 +27,8 @@
               <span class="ew-kicker">01 / 连接</span>
               <h2 class="ew-section-title" style="margin-top: 8px">需要 TypeSafe API Key</h2>
               <p class="ew-muted">
-                API Key 保存在 Chrome 本地。标题、频道名和卡片描述会直接发送至
-                TypeSafe。密钥不会写入 YouTube 页面。
+                API Key 保存在 Chrome 本地。视频标题、频道名或帖子作者、正文会直接发送至
+                TypeSafe。密钥不会写入网站页面。
               </p>
               <a
                 class="ew-button ghost ew-key-link"
@@ -72,7 +72,8 @@
               <span class="ew-kicker">03 / 准备好了</span>
               <h2 class="ew-section-title" style="margin-top: 8px">防护已就绪</h2>
               <p class="ew-muted">
-                打开 YouTube 首页、搜索结果或播放页侧栏即可过滤推荐。不会分析缩略图或视频画面。
+                打开 YouTube 推荐，或 X
+                首页、搜索结果和帖子回复即可过滤。不会分析图片、音频或视频画面。
               </p>
               <div
                 class="ew-card"
@@ -80,7 +81,7 @@
               >
                 <div class="ew-chip green">过滤已开启</div>
                 <p style="margin: 10px 0 0">
-                  任何 API 错误、超时或达到每日配额时，视频都会保持显示。
+                  任何 API 错误、超时或达到每日配额时，内容都会保持显示。
                 </p>
               </div>
               <div class="ew-onboarding-actions">
@@ -92,7 +93,7 @@
           </form>
         </section>
         <footer class="ew-footer">
-          <span>规则保存在本地 · 内容由你选择</span><span class="ew-mono">TubeGate v0.2.0</span>
+          <span>规则保存在本地 · 内容由你选择</span><span class="ew-mono">TubeGate v0.3.0</span>
         </footer>
       </div>
     </main>

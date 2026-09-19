@@ -15,20 +15,20 @@ const ruleExamples: Record<
   politics: {
     name: '政治 / 时政',
     description:
-      '隐藏以当代政治、政党、选举、政治人物、政府政策争论或国际政治冲突为主要话题的视频，不区分国家或立场。',
+      '隐藏以当代政治、政党、选举、政治人物、政府政策争论或国际政治冲突为主要话题的内容，不区分国家或立场。',
     falseCriteria:
-      '保留历史知识、政治学基础课程，以及仅顺带提到政治人物或国家名称、主要内容并非时政的视频。',
+      '保留历史知识、政治学基础课程，以及仅顺带提到政治人物或国家名称、主要内容并非时政的内容。',
     threshold: 0.8,
   },
   gaming: {
     name: '游戏实况',
-    description: '隐藏以电子游戏实况、游戏直播剪辑、对局解说或游戏攻略为主要内容的视频。',
+    description: '隐藏以电子游戏实况、游戏直播剪辑、对局解说或游戏攻略为主要内容的帖子或视频。',
     falseCriteria: '保留游戏开发、编程教学和计算机图形学课程。',
     threshold: 0.8,
   },
   entertainment: {
     name: '娱乐八卦',
-    description: '隐藏以明星绯闻、私人感情、粉丝争吵或娱乐圈爆料为主要话题的视频。',
+    description: '隐藏以明星绯闻、私人感情、粉丝争吵或娱乐圈爆料为主要话题的内容。',
     falseCriteria: '保留作品分析、影评、音乐表演和正式人物访谈。',
     threshold: 0.8,
   },
@@ -263,7 +263,7 @@ $<HTMLFormElement>('ruleForm').addEventListener('submit', async (event) => {
             falseCriteria,
             threshold,
             instructions:
-              '仅根据视频标题、频道名和描述判断 `content` 是否符合以下过滤条件：' +
+              '仅根据标题、作者与正文或描述判断 `content` 是否符合以下过滤条件：' +
               description +
               '。不要推测画面。',
           }
@@ -278,7 +278,7 @@ $<HTMLFormElement>('ruleForm').addEventListener('submit', async (event) => {
         name,
         description,
         instructions:
-          '仅根据视频标题、频道名和描述判断 `content` 是否符合以下过滤条件：' +
+          '仅根据标题、作者与正文或描述判断 `content` 是否符合以下过滤条件：' +
           description +
           '。不要推测画面。',
         trueCriteria: description,
@@ -338,7 +338,7 @@ $<HTMLButtonElement>('revokeKeyButton').addEventListener('click', async () => {
 });
 $<HTMLButtonElement>('clearCacheButton').addEventListener('click', async () => {
   await send(E.MESSAGE.CLEAR_CACHE);
-  showToast('分类缓存已清除，刷新 YouTube 页面后重新检查', 'success');
+  showToast('分类缓存已清除，刷新 YouTube 或 X 页面后重新检查', 'success');
 });
 $<HTMLButtonElement>('saveAllButton').addEventListener('click', () =>
   showToast('当前配置已实时同步到浏览器本地存储', 'success')

@@ -14,7 +14,7 @@ function createRegistry() {
     adapters.set(adapter.id, registered);
     return registered;
   }
-  function resolve(url: string) {
+  function resolve(url: string): ContentAdapter | null {
     const matches = [...adapters.values()].filter((adapter) => adapter.matches(url));
     if (matches.length > 1) throw new Error('Ambiguous adapter match');
     return matches[0] || null;

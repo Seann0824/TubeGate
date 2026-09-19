@@ -15,6 +15,8 @@ import * as C from '../src/core/content';
 import * as D from '../src/core/decision';
 import { createRegistry, registry } from '../src/core/adapters';
 import '../src/adapters/youtube';
+import '../src/adapters/twitter';
+import { buildSync } from 'esbuild';
 import { createClassificationService } from '../src/services/classification';
 
 async function serviceFixture(classifier: Classifier) {
@@ -105,24 +107,48 @@ test('registry rejects incomplete, duplicate and ambiguous adapters without need
   };
   assert.throws(() => registry.register({ id: 'bad' } as ContentAdapter), /missing/);
   registry.register(contract);
-  assert.equal(registry.resolve('https://example.test/').id, 'example');
+  assert.equal(registry.resolve('https://example.test/')?.id, 'example');
   assert.equal(registry.resolve('https://other.test/'), null);
   assert.throws(() => registry.register(contract), /Duplicate/);
   registry.register({ ...contract, id: 'overlap' });
   assert.throws(() => registry.resolve('https://example.test/'), /Ambiguous/);
 });
 
-test('manifest bundles only the registered YouTube adapter', () => {
+test('manifest isolates the YouTube and Twitter entrypoints and exact host permissions', () => {
   const manifest = JSON.parse(fs.readFileSync(path.join(__dirname, '../manifest.json'), 'utf8'));
+  const twitterHosts = [
+    'https://x.com/*',
+    'https://www.x.com/*',
+    'https://twitter.com/*',
+    'https://www.twitter.com/*',
+  ];
   assert.deepEqual(manifest.host_permissions, [
     'https://www.youtube.com/*',
     'https://api.typesafe.ai/*',
+    ...twitterHosts,
   ]);
-  assert.equal(manifest.content_scripts.length, 1);
+  assert.equal(manifest.content_scripts.length, 2);
   assert.deepEqual(manifest.content_scripts[0].js, ['src/content.js']);
-  assert.equal(registry.list().length, 1);
-  assert.equal(registry.resolve('https://www.youtube.com/').id, 'youtube');
-  assert.equal(registry.resolve('https://x.com/home'), null);
+  assert.deepEqual(manifest.content_scripts[1].matches, twitterHosts);
+  assert.deepEqual(manifest.content_scripts[1].js, ['src/content-twitter.js']);
+  assert.equal(registry.list().length, 2);
+  assert.equal(registry.resolve('https://www.youtube.com/')?.id, 'youtube');
+  assert.equal(registry.resolve('https://x.com/home')?.id, 'twitter');
+  assert.equal(registry.resolve('https://twitter.com/home')?.id, 'twitter');
+  for (const [entry, source, other] of [
+    ['content.ts', 'youtube', 'twitter'],
+    ['content-twitter.ts', 'twitter', 'youtube'],
+  ]) {
+    const build = buildSync({
+      entryPoints: [path.join(__dirname, '../src', entry)],
+      bundle: true,
+      write: false,
+      metafile: true,
+    });
+    const inputs = Object.keys(build.metafile.inputs);
+    assert.ok(inputs.some((file) => file.includes(`adapters/${source}/`)));
+    assert.ok(inputs.every((file) => !file.includes(`adapters/${other}/`)));
+  }
 });
 
 test('a second source and a different classifier use the same service and local decisions', async () => {

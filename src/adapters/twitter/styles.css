@@ -1,0 +1,28 @@
+/* Standalone post roots preserve X's virtualized timeline and restore controls. */
+article[data-testid='tweet'].smg-blocked,
+article[data-testid='tweet'].smg-pending {
+  display: block !important;
+}
+article[data-testid='tweet'] > .smg-placeholder {
+  margin: 8px 0;
+  background: Canvas;
+  color: CanvasText;
+  border-color: #8c998880;
+  border-left-color: #708468;
+  color-scheme: light dark;
+}
+article[data-testid='tweet'] > .smg-controls {
+  flex-basis: 100%;
+  width: 100%;
+}
+article[data-testid='tweet'] .smg-reasons {
+  color: inherit;
+  opacity: 0.75;
+}
+article[data-testid='tweet'] .smg-placeholder button,
+article[data-testid='tweet'] .smg-controls button {
+  background: Canvas;
+  color: CanvasText;
+  border-color: #8c998880;
+  color-scheme: light dark;
+}

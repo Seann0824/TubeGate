@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "TubeGate",
-  "version": "0.2.0",
-  "description": "按自定义规则过滤 YouTube 推荐视频，支持恢复显示。使用自己的 TypeSafe API Key。",
+  "version": "0.3.0",
+  "description": "按自定义规则过滤 YouTube 推荐和 Twitter / X 帖子，支持恢复显示。使用自己的 TypeSafe API Key。",
   "icons": {
     "16": "assets/icon16.png",
     "32": "assets/icon32.png",
@@ -10,7 +10,14 @@
     "128": "assets/icon128.png"
   },
   "permissions": ["storage"],
-  "host_permissions": ["https://www.youtube.com/*", "https://api.typesafe.ai/*"],
+  "host_permissions": [
+    "https://www.youtube.com/*",
+    "https://api.typesafe.ai/*",
+    "https://x.com/*",
+    "https://www.x.com/*",
+    "https://twitter.com/*",
+    "https://www.twitter.com/*"
+  ],
   "background": {
     "service_worker": "src/background.js"
   },
@@ -29,6 +36,17 @@
       "matches": ["https://www.youtube.com/*"],
       "js": ["src/content.js"],
       "css": ["src/styles/content.css", "src/adapters/youtube/styles.css"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://x.com/*",
+        "https://www.x.com/*",
+        "https://twitter.com/*",
+        "https://www.twitter.com/*"
+      ],
+      "js": ["src/content-twitter.js"],
+      "css": ["src/styles/content.css", "src/adapters/twitter/styles.css"],
       "run_at": "document_idle"
     }
   ],

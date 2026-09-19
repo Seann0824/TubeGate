@@ -19,6 +19,7 @@ await build({
   entryPoints: [
     'src/background.ts',
     'src/content.ts',
+    'src/content-twitter.ts',
     'src/popup.ts',
     'src/settings.ts',
     'src/onboarding.ts',

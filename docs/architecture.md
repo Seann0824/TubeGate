@@ -1,16 +1,16 @@
 # TubeGate 架构与接口
 
-目标是让网站来源和分类供应商各自可替换。产品当前只有 YouTube 与 Jev；不增加其他网站权限，不读取图片或音视频。
+目标是让网站来源和分类供应商各自可替换。产品当前有 YouTube 和 Twitter / X 两个来源，分类器使用 Jev；只申请对应站点的精确主机权限，不读取图片或音视频。
 
 ## 类型与构建
 
 `src/types.ts` 定义 `ContentItem`、`ContentAdapter`、`Classifier`、规则、配置和消息请求/响应类型。外部内容与 Jev 响应以 `unknown` 接收并校验；类型不会替代运行时校验。`src/shared/messages.ts` 让每种消息的参数与响应对应，统一处理运行时断连与超时。
 
-源码通过 ES 模块显式导入。`scripts/package.mts` 使用 esbuild 将 background、content、popup、settings、onboarding 五个入口打包为独立 IIFE，避免向网页泄露模块全局，也不依赖 `importScripts` 顺序。manifest 和 HTML 引用的是 `dist/` 中生成的 `.js`。TypeScript 源码、测试、预览模拟器不进入扩展包。
+源码通过 ES 模块显式导入。`scripts/package.mts` 使用 esbuild 将 background、content、content-twitter、popup、settings、onboarding 六个入口打包为独立 IIFE，避免向网页泄露模块全局，也不依赖 `importScripts` 顺序。manifest 和 HTML 引用的是 `dist/` 中生成的 `.js`。TypeScript 源码、测试、预览模拟器不进入扩展包。
 
 `tsconfig.json` 的严格检查覆盖源码、构建工具、预览工具和非 UI 测试。CI 先 `npm ci`，再检查、测试和打包。
 
-扩展设置页的 `src/shared/scrollbars.ts` 绘制滚动条，保留滚轮和触控板的浏览器滚动行为；内容适配器不会向 YouTube 注入这套设置页滚动条。
+扩展设置页的 `src/shared/scrollbars.ts` 绘制滚动条，保留滚轮和触控板的浏览器滚动行为；内容适配器不会向 YouTube 或 X 注入这套设置页滚动条。
 
 ## 数据流与边界
 
@@ -74,6 +74,14 @@ sequenceDiagram
 
 当前共享视图要求卡片根节点支持追加直接子节点，并允许隐藏其原有直接子元素。候选应是单条可恢复的内容容器，不能返回整列信息流、整个货架或播放器。新站点若不能满足该容器约定，应先扩展明确的视图接口，而不是向共享运行层塞网站判断。
 
+## Twitter / X 适配器
+
+`adapters/twitter/urls.ts` 只接受精确 HTTPS 主机，支持 `/home`、带查询的 `/search` 和标准帖子详情 URL；其他页面返回 null。`focusedContentId` 标记详情页主帖，在提取前排除。SPA 跳转由共用运行层的 URL 轮询、popstate 和 DOM 变化识别。
+
+卡片必须位于主列、拥有外层作者区域内的时间戳永久链接，并带有外层帖子的正文。引用卡片和嵌套帖子不能提供外层帖子的 ID、作者或文字。提取 emoji 图片的文字替代，不读取媒体文件。缺正文或身份时保持显示。主列外、隐藏区域、对话框、已识别的广告容器均跳过。
+
+YouTube 与 Twitter 的入口分别打包，通过构建依赖图检查相互隔离。它们共用 `runtime/content.ts`，网站选择器不进入运行层。
+
 ## Classifier
 
 分类服务通过注入使用分类器，不导入 Jev：
@@ -92,13 +100,13 @@ const classifier = {
 
 每条启用规则都必须返回有限的 0–1 数值分数。缺失、字符串或越界值视为无效响应，保持内容显示。`src/providers/jev-protocol.ts` 负责将规则转成 Jev questions，以及将 noul/pTrue 等响应转成分数；`src/providers/jev.ts` 负责鉴权、超时和请求。
 
-分类器不重试，以保证一次视频分类消耗一次请求预算。添加重试时必须同步预算计数，不能在供应商内部偷偷增加调用。
+分类器不重试，以保证一次内容分类消耗一次请求预算。添加重试时必须同步预算计数，不能在供应商内部偷偷增加调用。
 
 `src/background.ts` 是组装入口。替换分类器实现时还要更新供应商相关的配置、设置页预览与准确的 API 主机权限；不需要修改 Adapter 或阈值决策。
 
 ## 规则、缓存与配置
 
-自定义规则通过 normalizeRule 保存，内置规则仍是 YouTube 产品的默认策略，而不是通用引擎的一部分。默认策略和界面可以随产品需求演进；此次不改用户已有的文字、阈值或启用状态。
+自定义规则通过 normalizeRule 保存。`shared/default-rules.ts` 提供跨来源的内置规则，并仅对文字仍与 0.2 默认值完全相同的内置规则迁移措辞；阈值、开关、自定义规则和任何用户改过的文字都保留。两站共用规则、API Key、统计和每日配额。
 
 缓存摘要包含完整序列化内容、启用规则的语义、模型、供应商 ID 和版本。source/type 在序列化内容中，因此不同来源不会混用；同来源相同文字可以跨内容 ID 复用分数。阈值与规则名称不影响分数缓存，命中后用当前配置重新决定。
 

@@ -13,7 +13,7 @@
           ><span class="ew-mark">◈</span
           ><span
             ><span class="ew-brand-title">TubeGate </span
-            ><span class="ew-brand-sub">YouTube 推荐视频过滤</span></span
+            ><span class="ew-brand-sub">YouTube 与 X 内容过滤</span></span
           ></a
         >
         <nav class="ew-nav">
@@ -45,7 +45,7 @@
             <div class="ew-side-stat">
               <span class="ew-kicker">A LITTLE LESS NOISE</span
               ><strong id="sideHiddenCount">0</strong
-              ><span class="ew-muted">今天少看了这些无关视频</span>
+              ><span class="ew-muted">今天少看了这些无关内容</span>
             </div>
           </aside>
           <div class="ew-settings-content">
@@ -56,7 +56,7 @@
                     <span class="ew-section-icon">◇</span>你不想看什么？
                   </h2>
                   <p class="ew-card-subtitle">
-                    用自己的话描述要隐藏的主题、频道或内容，不限于内置分类。
+                    规则同时用于 YouTube 与 X。用自己的话描述要隐藏的主题、作者或内容。
                   </p>
                 </div>
                 <button id="addRuleButton" class="ew-button primary small">＋ 添加规则</button>
@@ -95,26 +95,29 @@
               </div>
               <div class="ew-setting-row">
                 <div>
-                  <h3>启用 YouTube 过滤</h3>
-                  <p>自动检查首页、搜索结果和播放页侧栏中新加载的视频卡片。</p>
+                  <h3>启用内容过滤</h3>
+                  <p>YouTube：首页、搜索结果与播放页侧栏。X：首页信息流、搜索结果与帖子回复。</p>
                 </div>
                 <label class="ew-toggle"
                   ><input
                     id="enabledToggle"
                     type="checkbox"
-                    aria-label="启用 YouTube 过滤" /><span></span
+                    aria-label="启用内容过滤" /><span></span
                 ></label>
               </div>
               <div class="ew-setting-row">
                 <div>
-                  <h3>只处理推荐视频卡片 <span class="ew-chip">推荐</span></h3>
-                  <p>不处理当前播放器、评论、频道页、订阅页、历史记录或独立 Shorts 播放页。</p>
+                  <h3>只处理支持范围内的内容 <span class="ew-chip">推荐</span></h3>
+                  <p>
+                    YouTube 不处理播放器、评论与频道页；X
+                    不处理详情页主帖、私信、个人资料页和发帖框。
+                  </p>
                 </div>
                 <label class="ew-toggle"
                   ><input
                     id="recommendationsOnlyToggle"
                     type="checkbox"
-                    aria-label="只处理推荐视频"
+                    aria-label="只处理支持范围内的内容"
                     checked
                     disabled /><span></span
                 ></label>
@@ -122,7 +125,7 @@
               <div class="ew-setting-row">
                 <div>
                   <h3>检查失败时保持显示 <span class="ew-chip green">异常时放行</span></h3>
-                  <p>API 失败、超时或配额耗尽时完整放行视频，不在不确定时隐藏。</p>
+                  <p>API 失败、超时或配额耗尽时完整放行内容，不在不确定时隐藏。</p>
                 </div>
                 <label class="ew-toggle"
                   ><input
@@ -142,7 +145,7 @@
                     <span class="ew-section-icon">⌁</span>连接 TypeSafe
                   </h2>
                   <p class="ew-card-subtitle">
-                    标题、频道名和卡片描述直接发送至 TypeSafe。API Key 保存在当前浏览器。
+                    视频标题、频道名或帖子作者、正文直接发送至 TypeSafe。API Key 保存在当前浏览器。
                   </p>
                 </div>
                 <span id="apiBadge" class="ew-chip amber">尚未连接</span>
@@ -181,7 +184,7 @@
               <div class="ew-card-header">
                 <div>
                   <h2 class="ew-section-title"><span class="ew-section-icon">□</span>显示与交互</h2>
-                  <p class="ew-card-subtitle">隐藏视频不会被删除，用户可以在原位置恢复查看。</p>
+                  <p class="ew-card-subtitle">隐藏内容不会被删除，用户可以在原位置恢复查看。</p>
                 </div>
               </div>
               <div class="ew-setting-row">
@@ -198,14 +201,14 @@
               </div>
               <div class="ew-setting-row">
                 <div>
-                  <h3>显示视频检查按钮</h3>
-                  <p>在视频卡片下显示检查状态和重新检查按钮。</p>
+                  <h3>显示内容检查按钮</h3>
+                  <p>在视频或帖子下显示检查状态和重新检查按钮。</p>
                 </div>
                 <label class="ew-toggle"
                   ><input
                     id="checkControlsToggle"
                     type="checkbox"
-                    aria-label="显示视频检查按钮" /><span></span
+                    aria-label="显示内容检查按钮" /><span></span
                 ></label>
               </div>
               <div class="ew-setting-row">
@@ -222,7 +225,7 @@
               </div>
               <div class="ew-setting-row">
                 <div>
-                  <h3>判断完成前隐藏新视频 <span class="ew-chip amber">实验性</span></h3>
+                  <h3>判断完成前隐藏新内容 <span class="ew-chip amber">实验性</span></h3>
                   <p>
                     默认关闭。开启会减少短暂闪现，但等待期间卡片内容暂时隐藏；失败或超时后恢复显示。
                   </p>
@@ -231,7 +234,7 @@
                   ><input
                     id="preloadToggle"
                     type="checkbox"
-                    aria-label="判断完成前隐藏新视频" /><span></span
+                    aria-label="判断完成前隐藏新内容" /><span></span
                 ></label>
               </div>
             </section>
@@ -251,7 +254,7 @@
                 <div class="ew-progress" style="margin: 10px 0 6px">
                   <span id="quotaProgress" style="width: 0%"></span>
                 </div>
-                <p class="ew-help">达到限制后停止 AI 过滤，视频保持显示。</p>
+                <p class="ew-help">达到限制后停止 AI 过滤，内容保持显示。</p>
               </div>
               <div class="ew-grid ew-grid-2" style="margin-top: 10px">
                 <div class="ew-field">
@@ -314,7 +317,7 @@
               >
                 <div>
                   <strong>清空本地分类缓存</strong>
-                  <p class="ew-help">保留密钥和规则。下次浏览时重新判断视频。</p>
+                  <p class="ew-help">保留密钥和规则。刷新页面后重新判断内容。</p>
                 </div>
                 <button id="clearCacheButton" class="ew-button danger small">立即清除缓存</button>
               </div>
@@ -335,7 +338,7 @@
         </div>
         <footer class="ew-footer">
           <span>TubeGate · 让注意力回到自己手里</span
-          ><span class="ew-mono">为你的 YouTube 留一点空间</span>
+          ><span class="ew-mono">为你的信息流留一点空间</span>
         </footer>
       </main>
     </div>

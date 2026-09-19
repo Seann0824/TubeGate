@@ -41,6 +41,7 @@ export interface PageContext {
   key: string;
   kind: string;
   videoId?: string | null;
+  focusedContentId?: string;
 }
 export interface ContentAdapter {
   id: string;
