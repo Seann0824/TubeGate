@@ -63,12 +63,6 @@ API Key 存于当前扩展的本地存储；页面脚本通过后台服务请求
 
 仅申请 `storage` 和 YouTube / TypeSafe 两个站点的权限。没有申请 history、cookies、webRequest 或全站访问权限。扩展设置与 elons-job 独立，不会自动读取其 Key。
 
-## 验证状态
-
-自动化检查只覆盖非 UI 的规则判断、URL 范围、数据拼接、缓存、并发、配额和错误处理；API 使用模拟响应，不产生实际调用成本。没有编写 UI 单元测试。
-
-**真实 YouTube 页面效果及真实 TypeSafe 分类尚未由用户验证，不能视为验收通过。** 具体改动、手动步骤和预期结果见 [手动验收清单](docs/manual-verification.md)。YouTube 分批推送页面结构，未覆盖的卡片结构保持原样。
-
 ## 架构
 
 ```mermaid
