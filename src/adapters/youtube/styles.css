@@ -1,4 +1,21 @@
-html[dark] .smg-placeholder { background: #18202b; color: #e4eaf3; border-color: #394759; border-left-color: #ed6565; }
-html[dark] .smg-reasons { color: #b2bdcc; }
-html[dark] .smg-placeholder button, html[dark] .smg-controls button, html[dark] .smg-status button { color: #bfdaff; background: #223248; border-color: #415776; }
-html[dark] .smg-placeholder button:hover, html[dark] .smg-controls button:hover, html[dark] .smg-status button:hover { background: #304867; }
+html[dark] .smg-placeholder {
+  background: #18202b;
+  color: #e4eaf3;
+  border-color: #394759;
+  border-left-color: #ed6565;
+}
+html[dark] .smg-reasons {
+  color: #b2bdcc;
+}
+html[dark] .smg-placeholder button,
+html[dark] .smg-controls button,
+html[dark] .smg-status button {
+  color: #bfdaff;
+  background: #223248;
+  border-color: #415776;
+}
+html[dark] .smg-placeholder button:hover,
+html[dark] .smg-controls button:hover,
+html[dark] .smg-status button:hover {
+  background: #304867;
+}

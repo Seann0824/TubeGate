@@ -9,13 +9,8 @@
     "48": "assets/icon48.png",
     "128": "assets/icon128.png"
   },
-  "permissions": [
-    "storage"
-  ],
-  "host_permissions": [
-    "https://www.youtube.com/*",
-    "https://api.typesafe.ai/*"
-  ],
+  "permissions": ["storage"],
+  "host_permissions": ["https://www.youtube.com/*", "https://api.typesafe.ai/*"],
   "background": {
     "service_worker": "src/background.js"
   },
@@ -31,21 +26,9 @@
   "options_page": "src/settings.html",
   "content_scripts": [
     {
-      "matches": [
-        "https://www.youtube.com/*"
-      ],
-      "js": [
-        "src/shared/core.js",
-        "src/core/content.js",
-        "src/core/adapters.js",
-        "src/adapters/youtube/urls.js",
-        "src/adapters/youtube/index.js",
-        "src/content.js"
-      ],
-      "css": [
-        "src/styles/content.css",
-        "src/adapters/youtube/styles.css"
-      ],
+      "matches": ["https://www.youtube.com/*"],
+      "js": ["src/content.js"],
+      "css": ["src/styles/content.css", "src/adapters/youtube/styles.css"],
       "run_at": "document_idle"
     }
   ],

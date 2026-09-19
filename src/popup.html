@@ -1,63 +1,115 @@
 <!doctype html>
 <html lang="zh-CN">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>TubeGate</title>
-  <link rel="stylesheet" href="styles/app.css">
-</head>
-<body class="ew-popup">
-  <div class="ew-shell">
-    <main class="ew-popup-main">
-      <header class="ew-popup-hero">
-        <div style="display:flex;align-items:center;gap:10px">
-          <div id="shield" class="ew-shield">◈</div>
-          <div>
-            <div style="display:flex;align-items:center;gap:7px">
-              <h1>TubeGate</h1><span class="ew-badge">MV3</span>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>TubeGate</title>
+    <link rel="stylesheet" href="styles/app.css" />
+  </head>
+  <body class="ew-popup">
+    <div class="ew-shell">
+      <main class="ew-popup-main">
+        <header class="ew-popup-hero">
+          <div style="display: flex; align-items: center; gap: 10px">
+            <div id="shield" class="ew-shield">◈</div>
+            <div>
+              <div style="display: flex; align-items: center; gap: 7px">
+                <h1>TubeGate</h1>
+              </div>
+              <p>YouTube 推荐视频过滤</p>
             </div>
-            <p>YouTube 推荐视频过滤</p>
           </div>
+          <label class="ew-toggle" title="启用保护"
+            ><input id="enabledToggle" type="checkbox" aria-label="启用 YouTube 过滤" /><span></span
+          ></label>
+        </header>
+        <p class="ew-popup-tagline">好内容，值得更多注意。</p>
+
+        <section
+          id="connectPanel"
+          class="ew-popup-connect prominent ew-hidden"
+          aria-labelledby="connectTitle"
+        >
+          <span class="ew-kicker">开始你的第一次过滤</span>
+          <h2 id="connectTitle">需要 TypeSafe API Key</h2>
+          <p>
+            API Key 只存储在当前浏览器中。视频标题、频道名和描述会发送给 TypeSafe；无 Key
+            时保持显示。
+          </p>
+          <a
+            class="ew-button ghost ew-key-link"
+            href="https://typesafe.ai/"
+            target="_blank"
+            rel="noopener noreferrer"
+            >前往 TypeSafe 官网获取 API Key ↗</a
+          >
+          <div class="ew-popup-key">
+            <input
+              id="apiKeyInput"
+              aria-label="TypeSafe API Key"
+              class="ew-input"
+              type="password"
+              autocomplete="off"
+              placeholder="apikey_…"
+            /><button id="saveKeyButton" class="ew-button primary">测试并连接</button>
+          </div>
+          <p id="connectMessage" class="ew-form-error ew-hidden"></p>
+          <button
+            id="onboardingButton"
+            class="ew-button ghost small"
+            style="margin-top: 8px; width: 100%"
+          >
+            打开安装引导
+          </button>
+        </section>
+
+        <section class="ew-card ew-card-pad ew-popup-status" aria-labelledby="statusTitle">
+          <div class="ew-card-header">
+            <div><h2 id="statusTitle" class="ew-card-title">保护状态</h2></div>
+            <span id="statusBadge" class="ew-chip">读取中</span>
+          </div>
+          <div class="ew-grid ew-grid-3">
+            <div class="ew-metric">
+              <strong id="checkedCount" class="ew-metric-value">—</strong
+              ><span class="ew-metric-label">累计检查</span>
+            </div>
+            <div class="ew-metric">
+              <strong id="hiddenCount" class="ew-metric-value red">—</strong
+              ><span class="ew-metric-label">累计隐藏</span>
+            </div>
+            <div class="ew-metric">
+              <strong id="requestCount" class="ew-metric-value green">—</strong
+              ><span class="ew-metric-label">今日请求</span>
+            </div>
+          </div>
+        </section>
+
+        <section style="margin-top: 25px" aria-labelledby="rulesTitle">
+          <div class="ew-card-header" style="margin-bottom: 8px">
+            <div>
+              <h2 id="rulesTitle" class="ew-card-title">我的过滤规则</h2>
+              <p class="ew-card-subtitle">想少看什么，写下来就好。</p>
+            </div>
+            <span id="ruleCount" class="ew-chip">0</span>
+          </div>
+          <a
+            class="ew-button primary ew-custom-rule-link"
+            href="settings.html#section-rules"
+            target="_blank"
+            rel="noopener"
+            >＋ 自定义我不想看的内容</a
+          >
+          <div id="ruleList" class="ew-rule-list"></div>
+        </section>
+
+        <div class="ew-popup-bottom">
+          <span id="apiStatus"><span class="ew-dot warn"></span> 未连接 TypeSafe</span>
+          <button id="settingsButton" class="ew-button ghost small">偏好设置 ↗</button>
         </div>
-        <label class="ew-toggle" title="启用保护"><input id="enabledToggle" type="checkbox"><span></span></label>
-      </header>
+      </main>
+    </div>
+    <div id="toast" class="ew-toast ew-hidden" role="status"></div>
 
-      <section id="connectPanel" class="ew-popup-connect prominent ew-hidden" aria-labelledby="connectTitle">
-        <span class="ew-kicker">STEP 01 / CONNECT</span>
-        <h2 id="connectTitle">需要 TypeSafe API Key</h2>
-        <p>API Key 只存储在当前浏览器中。视频标题、频道名和描述会发送给 TypeSafe；无 Key 时保持显示。</p>
-        <a class="ew-button ghost ew-key-link" href="https://typesafe.ai/" target="_blank" rel="noopener noreferrer">前往 TypeSafe 官网获取 API Key ↗</a>
-        <div class="ew-popup-key"><input id="apiKeyInput" class="ew-input" type="password" autocomplete="off" placeholder="apikey_…"><button id="saveKeyButton" class="ew-button primary">测试并连接</button></div>
-        <p id="connectMessage" class="ew-form-error ew-hidden"></p>
-        <button id="onboardingButton" class="ew-button ghost small" style="margin-top:8px;width:100%">打开安装引导</button>
-      </section>
-
-      <section class="ew-card ew-card-pad ew-popup-status" aria-labelledby="statusTitle">
-        <div class="ew-card-header">
-          <div><h2 id="statusTitle" class="ew-card-title">保护状态</h2></div>
-          <span id="statusBadge" class="ew-chip">CHECKING</span>
-        </div>
-        <div class="ew-grid ew-grid-3">
-          <div class="ew-metric"><strong id="checkedCount" class="ew-metric-value">—</strong><span class="ew-metric-label">累计检查</span></div>
-          <div class="ew-metric"><strong id="hiddenCount" class="ew-metric-value red">—</strong><span class="ew-metric-label">累计隐藏</span></div>
-          <div class="ew-metric"><strong id="requestCount" class="ew-metric-value green">—</strong><span class="ew-metric-label">API 请求</span></div>
-        </div>
-      </section>
-
-      <section style="margin-top:12px" aria-labelledby="rulesTitle">
-        <div class="ew-card-header" style="margin-bottom:8px"><div><h2 id="rulesTitle" class="ew-card-title">启用的过滤规则</h2><p class="ew-card-subtitle">政治、游戏、娱乐……过滤内容由你定义</p></div><span id="ruleCount" class="ew-chip">0</span></div>
-        <a class="ew-button primary ew-custom-rule-link" href="settings.html#section-rules" target="_blank" rel="noopener">＋ 自定义我不想看的内容</a>
-        <div id="ruleList" class="ew-rule-list"></div>
-      </section>
-
-      <div class="ew-popup-bottom">
-        <span id="apiStatus"><span class="ew-dot warn"></span> 未连接 TypeSafe</span>
-        <button id="settingsButton" class="ew-button ghost small">设置中心 ↗</button>
-      </div>
-    </main>
-  </div>
-  <div id="toast" class="ew-toast ew-hidden" role="status"></div>
-  <script src="shared/core.js"></script>
-  <script src="popup.js"></script>
-</body>
+    <script src="popup.js"></script>
+  </body>
 </html>

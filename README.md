@@ -6,15 +6,26 @@ Chrome Manifest V3 扩展；采用可扩展的网站适配器架构，当前仅�
 
 ## 安装
 
-需要 Node.js 20+；没有第三方运行依赖。
+需要 Node.js 20+。源码、构建工具和非 UI 测试采用严格 TypeScript；没有第三方运行依赖。
 
 ```sh
+npm ci
 npm test
 npm run check
 npm run package
 ```
 
 打开 `chrome://extensions`，开启开发者模式，选择“加载已解压的扩展程序”，加载本项目的 `dist/` 目录。配置自己的 TypeSafe API Key，然后刷新已打开的 YouTube 页面。源码修改后重新打包、重新加载扩展，再刷新 YouTube。
+
+## 设计预览
+
+```sh
+npm run preview
+```
+
+打开 `http://127.0.0.1:4173/src/settings.html`；同目录的 `popup.html` 和 `onboarding.html` 可查看弹窗和引导页。预览带有明确的示例提示，规则修改只保留在当前页面，不连接真实 API、不读写扩展设置。预览代码不进入 `dist/`。
+
+`npm run check` 检查全部 TypeScript 类型，`npm test` 运行非 UI 测试，`npm run package` 检查类型并由 esbuild 生成五个浏览器入口。Chrome 加载生成的 JavaScript；请加载 `dist/`，不要直接加载仓库根目录。
 
 ## 功能和范围
 
@@ -29,7 +40,7 @@ npm run package
 
 ## 自定义不想看的内容
 
-扩展弹窗 → **自定义我不想看的内容** → **自定义内容**，写明规则名称、隐藏条件、保留条件和阈值，保存后启用。也可以点击“政治 / 时政”“游戏实况”“娱乐八卦”示例，修改草稿后保存；示例不会自动加入或启用。
+扩展弹窗 → **自定义我不想看的内容** → **添加规则**，写明规则名称、隐藏条件、保留条件和阈值，保存后启用。也可以点击“政治 / 时政”“游戏实况”“娱乐八卦”示例，修改草稿后保存；示例不会自动加入或启用。
 
 例如政治相关内容：
 
@@ -70,14 +81,14 @@ flowchart LR
 ```
 
 - `src/adapters/youtube/`：YouTube URL、DOM 提取、范围、导航事件与网站样式。
-- `src/core/content.js`：统一数据结构与校验；剔除 URL、DOM 等无关字段。
-- `src/core/adapters.js`：适配器注册与匹配。
-- `src/core/decision.js`：与网站和供应商无关的概率阈值决策。
-- `src/providers/jev*.js`：Jev 请求协议、响应解析和网络调用。
+- `src/core/content.ts`：统一数据结构与校验；剔除 URL、DOM 等无关字段。
+- `src/core/adapters.ts`：适配器注册与匹配。
+- `src/core/decision.ts`：与网站和供应商无关的概率阈值决策。
+- `src/providers/jev*.ts`：Jev 请求协议、响应解析和网络调用。
 - `src/services/`：可注入分类器的分类服务、缓存、配额与请求队列。
-- `src/content.js`：共享页面扫描、状态管理和隐藏/恢复交互，无 YouTube 选择器。
-- `src/background.js`：后台组装与消息处理，API Key 留在后台。
-- `src/shared/core.js`：配置、规则、存储与摘要工具；保留旧存储键以兼容现有设置。
+- `src/content.ts`：共享页面扫描、状态管理和隐藏/恢复交互，无 YouTube 选择器。
+- `src/background.ts`：后台组装与消息处理，API Key 留在后台。
+- `src/shared/core.ts`：配置、规则、存储与摘要工具；保留旧存储键以兼容现有设置。
 
 新增网站只添加适配器、必要的样式和精确域名权限，复用内容协议、分类服务和决策层。适配器由贡献者编写并随扩展打包，不运行远端脚本，也不是任意网站自动识别器。当前没有 X 等其他网站实现或权限。
 

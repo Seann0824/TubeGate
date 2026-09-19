@@ -5,11 +5,23 @@
   "description": "Filter YouTube recommendation cards with user-defined TypeSafe rules.",
   "type": "commonjs",
   "scripts": {
-    "test": "node --test",
-    "check": "node scripts/check.mjs",
-    "package": "node scripts/package.mjs"
+    "test": "tsx --test tests/*.test.ts",
+    "check": "tsc --noEmit",
+    "build": "tsx scripts/package.mts",
+    "package": "npm run check && npm run build",
+    "preview": "npm run package && tsx scripts/preview.mts",
+    "format": "prettier --write src scripts tests package.json manifest.json tsconfig.json",
+    "format:check": "prettier --check src scripts tests package.json manifest.json tsconfig.json"
   },
   "engines": {
     "node": ">=20"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.3.0",
+    "@types/node": "^26.6.2",
+    "esbuild": "^0.28.2",
+    "prettier": "^3.9.8",
+    "tsx": "^4.23.13",
+    "typescript": "^7.0.2"
   }
 }

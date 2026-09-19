@@ -1,15 +1,85 @@
-.smg-blocked > :not([data-smg-ui]) { display: none !important; }
-.smg-pending > :not([data-smg-ui]) { visibility: hidden !important; }
-.smg-placeholder, .smg-controls, .smg-status { font: 13px/1.5 system-ui, sans-serif; box-sizing: border-box; }
-.smg-placeholder { display: flex; flex-direction: column; justify-content: center; align-items: flex-start; gap: 12px; width: 100%; min-height: 112px; padding: 18px; border: 1px solid #c4cbd4; border-left: 3px solid #dc3535; border-radius: 12px; background: #f5f7fa; color: #263244; }
-.smg-placeholder.smg-compact { min-height: 64px; padding: 12px; gap: 6px; }
-.smg-reasons { font-size: 12px; color: #5b6573; overflow-wrap: anywhere; }
-.smg-placeholder button, .smg-controls button, .smg-status button { cursor: pointer; font: inherit; border: 1px solid #bbc9d9; border-radius: 7px; color: #204669; background: #edf4ff; padding: 5px 10px; }
-.smg-placeholder button:hover, .smg-controls button:hover, .smg-status button:hover { background: #dae8fc; }
-.smg-placeholder button:focus-visible, .smg-controls button:focus-visible, .smg-status button:focus-visible { outline: 2px solid #3783da; outline-offset: 3px; }
-.smg-controls { padding: 4px 0; }
-.smg-controls button { font-size: 11px; opacity: .8; }
-.smg-controls button:disabled { cursor: wait; opacity: .55; }
-.smg-status { position: fixed; right: 16px; bottom: 20px; z-index: 2100; max-width: calc(100vw - 32px); }
-.smg-status[hidden] { display: none !important; }
-.smg-status button { box-shadow: 0 4px 18px #0002; }
+.smg-blocked > :not([data-smg-ui]) {
+  display: none !important;
+}
+.smg-pending > :not([data-smg-ui]) {
+  visibility: hidden !important;
+}
+.smg-placeholder,
+.smg-controls,
+.smg-status {
+  font:
+    13px/1.5 system-ui,
+    sans-serif;
+  box-sizing: border-box;
+}
+.smg-placeholder {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 12px;
+  width: 100%;
+  min-height: 112px;
+  padding: 18px;
+  border: 1px solid #c4cbd4;
+  border-left: 3px solid #dc3535;
+  border-radius: 12px;
+  background: #f5f7fa;
+  color: #263244;
+}
+.smg-placeholder.smg-compact {
+  min-height: 64px;
+  padding: 12px;
+  gap: 6px;
+}
+.smg-reasons {
+  font-size: 12px;
+  color: #5b6573;
+  overflow-wrap: anywhere;
+}
+.smg-placeholder button,
+.smg-controls button,
+.smg-status button {
+  cursor: pointer;
+  font: inherit;
+  border: 1px solid #bbc9d9;
+  border-radius: 7px;
+  color: #204669;
+  background: #edf4ff;
+  padding: 5px 10px;
+}
+.smg-placeholder button:hover,
+.smg-controls button:hover,
+.smg-status button:hover {
+  background: #dae8fc;
+}
+.smg-placeholder button:focus-visible,
+.smg-controls button:focus-visible,
+.smg-status button:focus-visible {
+  outline: 2px solid #3783da;
+  outline-offset: 3px;
+}
+.smg-controls {
+  padding: 4px 0;
+}
+.smg-controls button {
+  font-size: 11px;
+  opacity: 0.8;
+}
+.smg-controls button:disabled {
+  cursor: wait;
+  opacity: 0.55;
+}
+.smg-status {
+  position: fixed;
+  right: 16px;
+  bottom: 20px;
+  z-index: 2100;
+  max-width: calc(100vw - 32px);
+}
+.smg-status[hidden] {
+  display: none !important;
+}
+.smg-status button {
+  box-shadow: 0 4px 18px #0002;
+}

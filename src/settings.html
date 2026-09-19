@@ -1,62 +1,398 @@
 <!doctype html>
 <html lang="zh-CN">
-<head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>TubeGate · 设置中心</title><link rel="stylesheet" href="styles/app.css">
-</head>
-<body>
-  <div class="ew-shell">
-    <header class="ew-header">
-      <a class="ew-brand" href="settings.html"><span class="ew-mark">◈</span><span><span class="ew-brand-title">TubeGate <span class="ew-badge">PROD</span></span><span class="ew-brand-sub">YouTube 推荐视频过滤</span></span></a>
-      <nav class="ew-nav"><a href="popup.html">扩展控制台</a><a class="active" href="settings.html">设置中心</a></nav>
-      <div class="ew-header-actions"><span id="headerStatus" class="ew-status"><span class="ew-dot warn"></span>读取中</span></div>
-    </header>
-    <main class="ew-main">
-      <div class="ew-hero"><div><span class="ew-kicker">LOCAL CONFIGURATION / MV3</span><h1>扩展首选项与规则引擎</h1><p>按视频标题、频道名和卡片描述过滤推荐；可添加自己的隐藏条件。</p></div><div class="ew-header-actions"><button id="exportButton" class="ew-button ghost">导出配置</button><button id="saveAllButton" class="ew-button primary">保存配置</button></div></div>
-      <div class="ew-settings-layout">
-        <aside class="ew-side-nav" aria-label="设置导航">
-          <button class="active" data-target="section-general">⚙ 常规通用 <span class="ew-dot"></span></button>
-          <button data-target="section-api">⌁ TypeSafe API 引擎</button>
-          <button data-target="section-rules">◈ 过滤规则 <span id="sideRuleCount" class="ew-chip">0</span></button>
-          <button data-target="section-display">▣ 显示与交互</button>
-          <button data-target="section-quota">▥ 成本与配额</button>
-          <button data-target="section-advanced">⌘ 高级开发者</button>
-          <div class="ew-side-stat"><span class="ew-kicker">JEV ENGINE REALTIME</span><strong id="sideHiddenCount">0</strong><span class="ew-muted">个视频已被本地规则隐藏</span></div>
-        </aside>
-        <div class="ew-settings-content">
-          <section id="section-general" class="ew-card ew-card-pad ew-settings-section"><div class="ew-card-header"><div><h2 class="ew-section-title"><span class="ew-section-icon">◉</span>通用运行规则</h2><p class="ew-card-subtitle">控制内容拦截器的常驻状态、适用页面范畴及应急逃生通路。</p></div><span class="ew-chip green">CORE_ENGINE</span></div><div class="ew-setting-row"><div><h3>启用全局净化保护</h3><p>自动检查首页、搜索结果和播放页侧栏中新加载的视频卡片。</p></div><label class="ew-toggle"><input id="enabledToggle" type="checkbox"><span></span></label></div><div class="ew-setting-row"><div><h3>只处理推荐视频卡片 <span class="ew-chip">推荐</span></h3><p>不处理当前播放器、评论、频道页、订阅页、历史记录或独立 Shorts 播放页。</p></div><label class="ew-toggle"><input id="recommendationsOnlyToggle" type="checkbox" checked disabled><span></span></label></div><div class="ew-setting-row"><div><h3>Fail-Open 容错保障 <span class="ew-chip green">异常时放行</span></h3><p>API 失败、超时或配额耗尽时完整放行视频，不在不确定时隐藏。</p></div><label class="ew-toggle"><input id="failOpenToggle" type="checkbox" checked disabled><span></span></label></div></section>
-
-          <section id="section-api" class="ew-card ew-card-pad ew-settings-section"><div class="ew-card-header"><div><h2 class="ew-section-title"><span class="ew-section-icon">⌁</span>TypeSafe API 连接与鉴权</h2><p class="ew-card-subtitle">标题、频道名和卡片描述直接发送至 TypeSafe。API Key 保存在当前浏览器。</p></div><span id="apiBadge" class="ew-chip amber">NOT CONNECTED</span></div><a class="ew-button ghost ew-key-link" href="https://typesafe.ai/" target="_blank" rel="noopener noreferrer">前往 TypeSafe 官网获取 API Key ↗</a><div class="ew-api-line"><div class="ew-field"><label class="ew-label" for="apiKeyField">TypeSafe API Secret Key</label><input id="apiKeyField" class="ew-input ew-mono" type="password" autocomplete="off" readonly></div><div class="ew-api-actions"><button id="testKeyButton" class="ew-button small">测试</button><button id="changeKeyButton" class="ew-button small">更换</button><button id="revokeKeyButton" class="ew-button danger small">删除</button></div></div><p class="ew-help" style="margin-top:10px">Stored locally in your browser. 不会写入 YouTube 页面 DOM、URL、日志或插件开发者服务器。</p><p id="apiMessage" class="ew-form-error ew-hidden"></p></section>
-
-          <section id="section-rules" class="ew-card ew-card-pad ew-settings-section">
-            <div class="ew-card-header">
-              <div><h2 class="ew-section-title"><span class="ew-section-icon">◇</span>你不想看什么？</h2><p class="ew-card-subtitle">用自己的话描述要隐藏的主题、频道或内容，不限于内置分类。</p></div>
-              <button id="addRuleButton" class="ew-button primary small">＋ 自定义内容</button>
-            </div>
-            <div class="ew-rule-examples">
-              <strong>从示例开始</strong>
-              <div class="ew-rule-example-actions" aria-label="自定义规则示例">
-                <button type="button" class="ew-button ghost small" data-rule-example="politics">政治 / 时政</button>
-                <button type="button" class="ew-button ghost small" data-rule-example="gaming">游戏实况</button>
-                <button type="button" class="ew-button ghost small" data-rule-example="entertainment">娱乐八卦</button>
-              </div>
-              <p class="ew-help">示例只填入草稿，修改并保存后才启用。“政治敏感”范围由你定义，可写明具体话题和希望保留的内容。</p>
-            </div>
-            <p class="ew-help">任一启用的规则命中就隐藏。每条规则的保留条件只作用于该规则；不需要的内置规则可以关闭。</p>
-            <div id="settingsRuleList"></div>
-          </section>
-
-          <section id="section-display" class="ew-card ew-card-pad ew-settings-section"><div class="ew-card-header"><div><h2 class="ew-section-title"><span class="ew-section-icon">□</span>显示与交互</h2><p class="ew-card-subtitle">隐藏视频不会被删除，用户可以在原位置恢复查看。</p></div></div><div class="ew-setting-row"><div><h3>显示隐藏占位符</h3><p>显示命中规则；关闭后保留紧凑占位符和恢复按钮。</p></div><label class="ew-toggle"><input id="placeholderToggle" type="checkbox"><span></span></label></div><div class="ew-setting-row"><div><h3>显示视频检查按钮</h3><p>在视频卡片下显示检查状态和重新检查按钮。</p></div><label class="ew-toggle"><input id="checkControlsToggle" type="checkbox"><span></span></label></div><div class="ew-setting-row"><div><h3>显示置信度</h3><p>在占位符上显示命中规则的概率，帮助用户判断是否恢复。</p></div><label class="ew-toggle"><input id="confidenceToggle" type="checkbox"><span></span></label></div><div class="ew-setting-row"><div><h3>判断完成前隐藏新视频 <span class="ew-chip amber">实验性</span></h3><p>默认关闭。开启会减少短暂闪现，但 等待期间卡片内容暂时隐藏；失败或超时后恢复显示。</p></div><label class="ew-toggle"><input id="preloadToggle" type="checkbox"><span></span></label></div></section>
-
-          <section id="section-quota" class="ew-card ew-card-pad ew-settings-section"><div class="ew-card-header"><div><h2 class="ew-section-title"><span class="ew-section-icon">▥</span>API 配额与成本防护</h2><p class="ew-card-subtitle">缓存相同视频，限制每日请求量，不继续静默产生 API 成本。</p></div><span class="ew-chip green">BUDGET_GUARDED</span></div><div class="ew-card" style="padding:14px;background:#181e2a"><div style="display:flex;justify-content:space-between;gap:12px"><strong>今日请求数</strong><span id="quotaLabel" class="ew-mono ew-muted">0 / 1,000</span></div><div class="ew-progress" style="margin:10px 0 6px"><span id="quotaProgress" style="width:0%"></span></div><p class="ew-help">达到限制后停止 AI 过滤，视频保持显示。</p></div><div class="ew-grid ew-grid-2" style="margin-top:10px"><div class="ew-field"><label class="ew-label" for="concurrencySelect">最大并发请求</label><select id="concurrencySelect" class="ew-select"><option value="1">1 · 最保守</option><option value="2">2 · 稳定</option><option value="3">3 · 推荐</option><option value="4">4 · 快速</option><option value="6">6 · 激进</option></select></div><div class="ew-field"><label class="ew-label" for="dailyLimitInput">每日最大请求数</label><input id="dailyLimitInput" class="ew-input ew-mono" type="number" min="1" max="100000" step="1"></div></div><div class="ew-field" style="margin-top:12px"><label class="ew-label" for="cacheTtlSelect">本地 Cache TTL</label><select id="cacheTtlSelect" class="ew-select"><option value="1">1 小时</option><option value="24">24 小时 · 推荐</option><option value="72">3 天</option><option value="168">7 天</option></select></div></section>
-
-          <section id="section-advanced" class="ew-card ew-card-pad ew-settings-section"><div class="ew-card-header"><div><h2 class="ew-section-title"><span class="ew-section-icon">⌘</span>高级开发者选项</h2><p class="ew-card-subtitle">仅用于调试 DOM 适配器、缓存与 Jev 响应。</p></div></div><div class="ew-setting-row"><div><h3>Debug Mode</h3><p>仅在本地 Console 记录 视频 ID、content hash、命中规则与延迟，绝不输出 API Key 或原文。</p></div><label class="ew-toggle"><input id="debugToggle" type="checkbox"><span></span></label></div><div style="display:flex;justify-content:space-between;align-items:center;gap:12px;padding-top:14px"><div><strong>清空本地分类缓存</strong><p class="ew-help">不影响 API Key 与过滤规则，规则改动也会自动切换 fingerprint。</p></div><button id="clearCacheButton" class="ew-button danger small">立即清除缓存</button></div><hr class="ew-divider"><div><span class="ew-label">当前 Jev 请求预览</span><pre id="requestPreview" class="ew-code"></pre></div></section>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>TubeGate · 你的推荐，你做主</title>
+    <link rel="stylesheet" href="styles/app.css" />
+  </head>
+  <body>
+    <div class="ew-shell">
+      <header class="ew-header">
+        <a class="ew-brand" href="settings.html"
+          ><span class="ew-mark">◈</span
+          ><span
+            ><span class="ew-brand-title">TubeGate </span
+            ><span class="ew-brand-sub">YouTube 推荐视频过滤</span></span
+          ></a
+        >
+        <nav class="ew-nav">
+          <a href="popup.html">过滤概览</a><a class="active" href="settings.html">偏好设置</a>
+        </nav>
+        <div class="ew-header-actions">
+          <span id="headerStatus" class="ew-status"><span class="ew-dot warn"></span>读取中</span>
         </div>
+      </header>
+      <main class="ew-main">
+        <div class="ew-hero">
+          <div>
+            <span class="ew-kicker">LESS NOISE. MORE OF WHAT YOU LOVE.</span>
+            <h1>让推荐，<br />回到<em>你的兴趣。</em></h1>
+            <p>少一点无关内容，多一点值得看的。<br />告诉 TubeGate 你不想看什么，剩下的交给它。</p>
+          </div>
+          <div class="ew-paper-art" aria-hidden="true"><span>留点空间。</span></div>
+        </div>
+        <div class="ew-settings-layout">
+          <aside class="ew-side-nav" aria-label="设置导航">
+            <button class="active" data-target="section-rules">
+              我的过滤规则 <span id="sideRuleCount" class="ew-chip">0</span>
+            </button>
+            <button data-target="section-general">过滤范围</button>
+            <button data-target="section-api">连接 TypeSafe</button>
+            <button data-target="section-display">显示偏好</button>
+            <button data-target="section-quota">用量与额度</button>
+            <button data-target="section-advanced">高级设置</button>
+            <div class="ew-side-stat">
+              <span class="ew-kicker">A LITTLE LESS NOISE</span
+              ><strong id="sideHiddenCount">0</strong
+              ><span class="ew-muted">今天少看了这些无关视频</span>
+            </div>
+          </aside>
+          <div class="ew-settings-content">
+            <section id="section-rules" class="ew-card ew-card-pad ew-settings-section">
+              <div class="ew-card-header">
+                <div>
+                  <h2 class="ew-section-title">
+                    <span class="ew-section-icon">◇</span>你不想看什么？
+                  </h2>
+                  <p class="ew-card-subtitle">
+                    用自己的话描述要隐藏的主题、频道或内容，不限于内置分类。
+                  </p>
+                </div>
+                <button id="addRuleButton" class="ew-button primary small">＋ 添加规则</button>
+              </div>
+              <div class="ew-rule-examples">
+                <strong>还没想好怎么写？从一个主题开始。</strong>
+                <div class="ew-rule-example-actions" aria-label="自定义规则示例">
+                  <button type="button" class="ew-button ghost small" data-rule-example="politics">
+                    政治 / 时政
+                  </button>
+                  <button type="button" class="ew-button ghost small" data-rule-example="gaming">
+                    游戏实况
+                  </button>
+                  <button
+                    type="button"
+                    class="ew-button ghost small"
+                    data-rule-example="entertainment"
+                  >
+                    娱乐八卦
+                  </button>
+                </div>
+                <p class="ew-help">先选一个主题，再写清楚要隐藏和保留的内容。保存后才会生效。</p>
+              </div>
+              <p class="ew-help">
+                任一启用的规则命中就隐藏。每条规则的保留条件只作用于该规则；不需要的内置规则可以关闭。
+              </p>
+              <div id="settingsRuleList"></div>
+            </section>
+
+            <section id="section-general" class="ew-card ew-card-pad ew-settings-section">
+              <div class="ew-card-header">
+                <div>
+                  <h2 class="ew-section-title"><span class="ew-section-icon">◉</span>过滤范围</h2>
+                  <p class="ew-card-subtitle">在你浏览时，安静地整理推荐内容。</p>
+                </div>
+              </div>
+              <div class="ew-setting-row">
+                <div>
+                  <h3>启用 YouTube 过滤</h3>
+                  <p>自动检查首页、搜索结果和播放页侧栏中新加载的视频卡片。</p>
+                </div>
+                <label class="ew-toggle"
+                  ><input
+                    id="enabledToggle"
+                    type="checkbox"
+                    aria-label="启用 YouTube 过滤" /><span></span
+                ></label>
+              </div>
+              <div class="ew-setting-row">
+                <div>
+                  <h3>只处理推荐视频卡片 <span class="ew-chip">推荐</span></h3>
+                  <p>不处理当前播放器、评论、频道页、订阅页、历史记录或独立 Shorts 播放页。</p>
+                </div>
+                <label class="ew-toggle"
+                  ><input
+                    id="recommendationsOnlyToggle"
+                    type="checkbox"
+                    aria-label="只处理推荐视频"
+                    checked
+                    disabled /><span></span
+                ></label>
+              </div>
+              <div class="ew-setting-row">
+                <div>
+                  <h3>检查失败时保持显示 <span class="ew-chip green">异常时放行</span></h3>
+                  <p>API 失败、超时或配额耗尽时完整放行视频，不在不确定时隐藏。</p>
+                </div>
+                <label class="ew-toggle"
+                  ><input
+                    id="failOpenToggle"
+                    type="checkbox"
+                    aria-label="检查失败时保持显示"
+                    checked
+                    disabled /><span></span
+                ></label>
+              </div>
+            </section>
+
+            <section id="section-api" class="ew-card ew-card-pad ew-settings-section">
+              <div class="ew-card-header">
+                <div>
+                  <h2 class="ew-section-title">
+                    <span class="ew-section-icon">⌁</span>连接 TypeSafe
+                  </h2>
+                  <p class="ew-card-subtitle">
+                    标题、频道名和卡片描述直接发送至 TypeSafe。API Key 保存在当前浏览器。
+                  </p>
+                </div>
+                <span id="apiBadge" class="ew-chip amber">尚未连接</span>
+              </div>
+              <a
+                class="ew-button ghost ew-key-link"
+                href="https://typesafe.ai/"
+                target="_blank"
+                rel="noopener noreferrer"
+                >前往 TypeSafe 官网获取 API Key ↗</a
+              >
+              <div class="ew-api-line">
+                <div class="ew-field">
+                  <label class="ew-label" for="apiKeyField">你的 API Key</label
+                  ><input
+                    id="apiKeyField"
+                    class="ew-input ew-mono"
+                    type="password"
+                    autocomplete="off"
+                    readonly
+                  />
+                </div>
+                <div class="ew-api-actions">
+                  <button id="testKeyButton" class="ew-button small">测试</button
+                  ><button id="changeKeyButton" class="ew-button small">更换</button
+                  ><button id="revokeKeyButton" class="ew-button danger small">删除</button>
+                </div>
+              </div>
+              <p class="ew-help" style="margin-top: 10px">
+                密钥只保存在当前浏览器，不会写入页面、网址或日志。
+              </p>
+              <p id="apiMessage" class="ew-form-error ew-hidden"></p>
+            </section>
+
+            <section id="section-display" class="ew-card ew-card-pad ew-settings-section">
+              <div class="ew-card-header">
+                <div>
+                  <h2 class="ew-section-title"><span class="ew-section-icon">□</span>显示与交互</h2>
+                  <p class="ew-card-subtitle">隐藏视频不会被删除，用户可以在原位置恢复查看。</p>
+                </div>
+              </div>
+              <div class="ew-setting-row">
+                <div>
+                  <h3>显示隐藏占位符</h3>
+                  <p>显示命中规则；关闭后保留紧凑占位符和恢复按钮。</p>
+                </div>
+                <label class="ew-toggle"
+                  ><input
+                    id="placeholderToggle"
+                    type="checkbox"
+                    aria-label="显示隐藏占位符" /><span></span
+                ></label>
+              </div>
+              <div class="ew-setting-row">
+                <div>
+                  <h3>显示视频检查按钮</h3>
+                  <p>在视频卡片下显示检查状态和重新检查按钮。</p>
+                </div>
+                <label class="ew-toggle"
+                  ><input
+                    id="checkControlsToggle"
+                    type="checkbox"
+                    aria-label="显示视频检查按钮" /><span></span
+                ></label>
+              </div>
+              <div class="ew-setting-row">
+                <div>
+                  <h3>显示置信度</h3>
+                  <p>在占位符上显示命中规则的概率，帮助用户判断是否恢复。</p>
+                </div>
+                <label class="ew-toggle"
+                  ><input
+                    id="confidenceToggle"
+                    type="checkbox"
+                    aria-label="显示置信度" /><span></span
+                ></label>
+              </div>
+              <div class="ew-setting-row">
+                <div>
+                  <h3>判断完成前隐藏新视频 <span class="ew-chip amber">实验性</span></h3>
+                  <p>
+                    默认关闭。开启会减少短暂闪现，但等待期间卡片内容暂时隐藏；失败或超时后恢复显示。
+                  </p>
+                </div>
+                <label class="ew-toggle"
+                  ><input
+                    id="preloadToggle"
+                    type="checkbox"
+                    aria-label="判断完成前隐藏新视频" /><span></span
+                ></label>
+              </div>
+            </section>
+
+            <section id="section-quota" class="ew-card ew-card-pad ew-settings-section">
+              <div class="ew-card-header">
+                <div>
+                  <h2 class="ew-section-title"><span class="ew-section-icon">▥</span>用量与额度</h2>
+                  <p class="ew-card-subtitle">重复内容优先使用缓存。设置每日额度，控制请求用量。</p>
+                </div>
+              </div>
+              <div class="ew-card" style="padding: 14px; background: var(--ew-surface-2)">
+                <div style="display: flex; justify-content: space-between; gap: 12px">
+                  <strong>今日请求数</strong
+                  ><span id="quotaLabel" class="ew-mono ew-muted">0 / 1,000</span>
+                </div>
+                <div class="ew-progress" style="margin: 10px 0 6px">
+                  <span id="quotaProgress" style="width: 0%"></span>
+                </div>
+                <p class="ew-help">达到限制后停止 AI 过滤，视频保持显示。</p>
+              </div>
+              <div class="ew-grid ew-grid-2" style="margin-top: 10px">
+                <div class="ew-field">
+                  <label class="ew-label" for="concurrencySelect">最大并发请求</label
+                  ><select id="concurrencySelect" class="ew-select">
+                    <option value="1">1 · 最保守</option>
+                    <option value="2">2 · 稳定</option>
+                    <option value="3">3 · 推荐</option>
+                    <option value="4">4 · 快速</option>
+                    <option value="6">6 · 激进</option>
+                  </select>
+                </div>
+                <div class="ew-field">
+                  <label class="ew-label" for="dailyLimitInput">每日最大请求数</label
+                  ><input
+                    id="dailyLimitInput"
+                    class="ew-input ew-mono"
+                    type="number"
+                    min="1"
+                    max="100000"
+                    step="1"
+                  />
+                </div>
+              </div>
+              <div class="ew-field" style="margin-top: 12px">
+                <label class="ew-label" for="cacheTtlSelect">分类结果保留时间</label
+                ><select id="cacheTtlSelect" class="ew-select">
+                  <option value="1">1 小时</option>
+                  <option value="24">24 小时 · 推荐</option>
+                  <option value="72">3 天</option>
+                  <option value="168">7 天</option>
+                </select>
+              </div>
+            </section>
+
+            <section id="section-advanced" class="ew-card ew-card-pad ew-settings-section">
+              <div class="ew-card-header">
+                <div>
+                  <h2 class="ew-section-title"><span class="ew-section-icon">⌘</span>高级设置</h2>
+                  <p class="ew-card-subtitle">遇到问题时，可以清理缓存或开启诊断记录。</p>
+                </div>
+              </div>
+              <div class="ew-setting-row">
+                <div>
+                  <h3>本地诊断记录</h3>
+                  <p>在浏览器控制台记录内容标识和请求耗时，不记录密钥或原文。</p>
+                </div>
+                <label class="ew-toggle"
+                  ><input id="debugToggle" type="checkbox" aria-label="本地诊断记录" /><span></span
+                ></label>
+              </div>
+              <div
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                  gap: 12px;
+                  padding-top: 14px;
+                "
+              >
+                <div>
+                  <strong>清空本地分类缓存</strong>
+                  <p class="ew-help">保留密钥和规则。下次浏览时重新判断视频。</p>
+                </div>
+                <button id="clearCacheButton" class="ew-button danger small">立即清除缓存</button>
+              </div>
+              <hr class="ew-divider" />
+              <div>
+                <span class="ew-label">当前 Jev 请求预览</span>
+                <pre id="requestPreview" class="ew-code"></pre>
+              </div>
+            </section>
+          </div>
+        </div>
+        <div class="ew-settings-toolbar">
+          <span>更改会自动保存在当前浏览器</span>
+          <div class="ew-header-actions">
+            <button id="exportButton" class="ew-button ghost small">导出规则与设置 ↗</button
+            ><button id="saveAllButton" class="ew-button ghost small">已自动保存 ✓</button>
+          </div>
+        </div>
+        <footer class="ew-footer">
+          <span>TubeGate · 让注意力回到自己手里</span
+          ><span class="ew-mono">为你的 YouTube 留一点空间</span>
+        </footer>
+      </main>
+    </div>
+    <div id="modalBackdrop" class="ew-modal-backdrop ew-hidden">
+      <div class="ew-modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <div class="ew-modal-header">
+          <h2 id="modalTitle">添加自定义过滤规则</h2>
+          <button id="closeModalButton" class="ew-button ghost small" aria-label="关闭">
+            关闭
+          </button>
+        </div>
+        <form id="ruleForm" class="ew-modal-form">
+          <div class="ew-field">
+            <label class="ew-label" for="ruleName">规则名称</label
+            ><input
+              id="ruleName"
+              class="ew-input"
+              required
+              maxlength="80"
+              placeholder="例如：政治 / 时政、游戏实况、不想看的频道"
+            />
+          </div>
+          <div class="ew-field">
+            <label class="ew-label" for="ruleDescription">隐藏什么内容？</label
+            ><textarea
+              id="ruleDescription"
+              class="ew-textarea"
+              required
+              maxlength="500"
+              placeholder="例如：隐藏以当代政治、选举、政党争论或国际政治冲突为主要话题的视频，不区分立场。"
+            ></textarea>
+          </div>
+          <div class="ew-field">
+            <label class="ew-label" for="ruleFalseCriteria">不要隐藏什么内容？</label
+            ><textarea
+              id="ruleFalseCriteria"
+              class="ew-textarea"
+              maxlength="800"
+              placeholder="例如：保留历史知识、政治学基础课程，以及只顺带提到政治的视频。"
+            ></textarea>
+          </div>
+          <div class="ew-field">
+            <label class="ew-label" for="ruleThreshold"
+              >隐藏阈值 <span id="thresholdValue" class="ew-mono">80%</span></label
+            ><input id="ruleThreshold" class="ew-range" type="range" min="50" max="99" value="80" />
+            <div class="ew-range-labels">
+              <span>更容易隐藏</span><span>平衡</span><span>更少误伤</span>
+            </div>
+          </div>
+          <div class="ew-onboarding-actions">
+            <button type="button" id="cancelRuleButton" class="ew-button ghost">取消</button
+            ><button type="submit" class="ew-button primary">保存规则</button>
+          </div>
+        </form>
       </div>
-      <footer class="ew-footer"><span>TubeGate © 2026 / Zero-Noise Social Feed Guardian</span><span class="ew-mono">Agent Core v0.2.0 · TypeSafe Jev</span></footer>
-    </main>
-  </div>
-  <div id="modalBackdrop" class="ew-modal-backdrop ew-hidden"><div class="ew-modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="ew-modal-header"><h2 id="modalTitle">添加自定义过滤规则</h2><button id="closeModalButton" class="ew-button ghost small" aria-label="关闭">关闭</button></div><form id="ruleForm" class="ew-modal-form"><div class="ew-field"><label class="ew-label" for="ruleName">规则名称</label><input id="ruleName" class="ew-input" required maxlength="80" placeholder="例如：政治 / 时政、游戏实况、不想看的频道"></div><div class="ew-field"><label class="ew-label" for="ruleDescription">隐藏什么内容？</label><textarea id="ruleDescription" class="ew-textarea" required maxlength="500" placeholder="例如：隐藏以当代政治、选举、政党争论或国际政治冲突为主要话题的视频，不区分立场。"></textarea></div><div class="ew-field"><label class="ew-label" for="ruleFalseCriteria">不要隐藏什么内容？</label><textarea id="ruleFalseCriteria" class="ew-textarea" maxlength="800" placeholder="例如：保留历史知识、政治学基础课程，以及只顺带提到政治的视频。"></textarea></div><div class="ew-field"><label class="ew-label" for="ruleThreshold">隐藏阈值 <span id="thresholdValue" class="ew-mono">80%</span></label><input id="ruleThreshold" class="ew-range" type="range" min="50" max="99" value="80"><div class="ew-range-labels"><span>更容易隐藏</span><span>平衡</span><span>更少误伤</span></div></div><div class="ew-onboarding-actions"><button type="button" id="cancelRuleButton" class="ew-button ghost">取消</button><button type="submit" class="ew-button primary">保存规则</button></div></form></div></div>
-  <div id="toast" class="ew-toast ew-hidden" role="status"></div>
-  <script src="shared/core.js"></script><script src="core/content.js"></script><script src="providers/jev-protocol.js"></script><script src="settings.js"></script>
-</body>
+    </div>
+    <div id="toast" class="ew-toast ew-hidden" role="status"></div>
+    <script src="settings.js"></script>
+  </body>
 </html>

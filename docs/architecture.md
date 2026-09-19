@@ -2,6 +2,16 @@
 
 目标是让网站来源和分类供应商各自可替换。产品当前只有 YouTube 与 Jev；不增加其他网站权限，不读取图片或音视频。
 
+## 类型与构建
+
+`src/types.ts` 定义 `ContentItem`、`ContentAdapter`、`Classifier`、规则、配置和消息请求/响应类型。外部内容与 Jev 响应以 `unknown` 接收并校验；类型不会替代运行时校验。`src/shared/messages.ts` 让每种消息的参数与响应对应，统一处理运行时断连与超时。
+
+源码通过 ES 模块显式导入。`scripts/package.mts` 使用 esbuild 将 background、content、popup、settings、onboarding 五个入口打包为独立 IIFE，避免向网页泄露模块全局，也不依赖 `importScripts` 顺序。manifest 和 HTML 引用的是 `dist/` 中生成的 `.js`。TypeScript 源码、测试、预览模拟器不进入扩展包。
+
+`tsconfig.json` 的严格检查覆盖源码、构建工具、预览工具和非 UI 测试。CI 先 `npm ci`，再检查、测试和打包。
+
+扩展设置页的 `src/shared/scrollbars.ts` 绘制滚动条，保留滚轮和触控板的浏览器滚动行为；内容适配器不会向 YouTube 注入这套设置页滚动条。
+
 ## 数据流与边界
 
 ```mermaid
@@ -27,7 +37,7 @@ sequenceDiagram
 
 ## ContentItem
 
-`src/core/content.js` 定义、校验和规范化以下字段：
+`src/core/content.ts` 定义、校验和规范化以下字段：
 
 ```js
 {
@@ -48,7 +58,7 @@ sequenceDiagram
 
 ## Adapter
 
-`src/core/adapters.js` 提供注册表，要求稳定 ID 和以下函数：
+`src/core/adapters.ts` 提供注册表，要求稳定 ID 和以下函数：
 
 | 接口 | 职责 |
 | --- | --- |
@@ -80,11 +90,11 @@ const classifier = {
 };
 ```
 
-每条启用规则都必须返回有限的 0–1 数值分数。缺失、字符串或越界值视为无效响应，保持内容显示。`src/providers/jev-protocol.js` 负责将规则转成 Jev questions，以及将 noul/pTrue 等响应转成分数；`src/providers/jev.js` 负责鉴权、超时和请求。
+每条启用规则都必须返回有限的 0–1 数值分数。缺失、字符串或越界值视为无效响应，保持内容显示。`src/providers/jev-protocol.ts` 负责将规则转成 Jev questions，以及将 noul/pTrue 等响应转成分数；`src/providers/jev.ts` 负责鉴权、超时和请求。
 
 分类器不重试，以保证一次视频分类消耗一次请求预算。添加重试时必须同步预算计数，不能在供应商内部偷偷增加调用。
 
-`src/background.js` 是组装入口。替换分类器实现时还要更新供应商相关的配置、设置页预览与准确的 API 主机权限；不需要修改 Adapter 或阈值决策。
+`src/background.ts` 是组装入口。替换分类器实现时还要更新供应商相关的配置、设置页预览与准确的 API 主机权限；不需要修改 Adapter 或阈值决策。
 
 ## 规则、缓存与配置
 
@@ -94,10 +104,10 @@ const classifier = {
 
 只保存分数和时间，不保存原文。最多 500 项。清空缓存时递增代次，清空前已经在途的请求不会重新写回。配额和统计更新串行执行，队列限制同时运行的请求。等待中的任务执行前会复核配置。
 
-`socialMediaGateConfig` 等存储键及 `SocialMediaGate` 配置命名空间继续保留，避免品牌改名使旧设置失效。新消息为 `CLASSIFY_CONTENT` 和 `RECORD_CONTENT_EVENT`，不再使用视频专属消息。扩展升级后应刷新已打开的页面。旧消息不会发起 API 调用；旧格式缓存通过缓存版本隔离。
+`socialMediaGateConfig` 等存储键继续保留；旧的 `globalThis.SocialMediaGate` 命名空间已改为 ES 模块导入，避免品牌改名使旧设置失效。新消息为 `CLASSIFY_CONTENT` 和 `RECORD_CONTENT_EVENT`，不再使用视频专属消息。扩展升级后应刷新已打开的页面。旧消息不会发起 API 调用；旧格式缓存通过缓存版本隔离。
 
 ## 验证边界
 
-非 UI 测试覆盖数据协议、适配器注册与加载顺序、另一来源和另一分类器复用服务、分数格式、缓存隔离、配额、并发和配置保留。测试不调用 DOM 提取方法，不为界面或布局编写单元测试。
+非 UI 测试覆盖数据协议、适配器注册与打包入口、另一来源和另一分类器复用服务、分数格式、缓存隔离、配额、并发和配置保留。测试不调用 DOM 提取方法，不为界面或布局编写单元测试。
 
 实际 YouTube 的选择器、主题、导航和恢复行为使用 [手动验收清单](manual-verification.md)，待用户验证。自动测试通过不代表实际页面或分类准确率已经验收。
