@@ -1,0 +1,15 @@
+{
+  "name": "tubegate",
+  "version": "0.2.0",
+  "private": true,
+  "description": "Filter YouTube recommendation cards with user-defined TypeSafe rules.",
+  "type": "commonjs",
+  "scripts": {
+    "test": "node --test",
+    "check": "node scripts/check.mjs",
+    "package": "node scripts/package.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

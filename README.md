@@ -1,6 +1,8 @@
-# Social Media Gate
+# TubeGate
 
-参考同级 `elons-job` 实现的 Chrome Manifest V3 扩展，按自然语言规则过滤 **YouTube 推荐视频卡片**。
+按你的规则，过滤 YouTube 推荐。用自然语言定义不想看的内容，支持自定义主题、保留条件和一键恢复。
+
+Chrome Manifest V3 扩展；采用可扩展的网站适配器架构，当前仅提供 YouTube 适配器。Jev 负责分类评分，本地规则决定是否隐藏。
 
 ## 安装
 
@@ -46,7 +48,7 @@ npm run package
 
 ## 数据流
 
-API Key 存于当前扩展的本地存储；页面脚本通过后台服务请求分类，不接收 Key。分类只向 `https://api.typesafe.ai/v1/systemone` 发送卡片文字和启用的规则，不发送视频 URL、视频 ID、Cookie 或浏览历史。调试关闭时不输出分类日志；开启后仅记录视频 ID、内容摘要、延迟或错误代码。
+API Key 存于当前扩展的本地存储；页面脚本通过后台服务请求分类，不接收 Key。分类只向 `https://api.typesafe.ai/v1/systemone` 发送来源标识、内容类型、卡片文字和启用的规则，不发送视频 URL、视频 ID、Cookie 或浏览历史。调试关闭时不输出分类日志；开启后仅记录来源标识、内容 ID、内容摘要、延迟或错误代码。
 
 仅申请 `storage` 和 YouTube / TypeSafe 两个站点的权限。没有申请 history、cookies、webRequest 或全站访问权限。扩展设置与 elons-job 独立，不会自动读取其 Key。
 
@@ -56,11 +58,31 @@ API Key 存于当前扩展的本地存储；页面脚本通过后台服务请求
 
 **真实 YouTube 页面效果及真实 TypeSafe 分类尚未由用户验证，不能视为验收通过。** 具体改动、手动步骤和预期结果见 [手动验收清单](docs/manual-verification.md)。YouTube 分批推送页面结构，未覆盖的卡片结构保持原样。
 
-## 文件结构
+## 架构
 
-- `src/shared/core.js`：默认规则、配置、概率判断和存储工具。
-- `src/shared/youtube.js`：页面范围、视频 ID 和分类文本。
-- `src/content.js`：视频卡片提取、监听、屏蔽、恢复与过期结果保护。
-- `src/background.js`：TypeSafe 请求、缓存、配额和并发队列。
-- `src/popup.*`、`src/settings.*`、`src/onboarding.*`：从 elons-job 复用并适配的视频过滤设置。
-# TubeGate
+```mermaid
+flowchart LR
+    A[YouTube Adapter] --> B[统一 ContentItem]
+    B --> C[分类服务：缓存 / 配额 / 并发]
+    C --> D[Jev：返回规则概率]
+    D --> E[本地规则：阈值决策]
+    E --> F[共享页面运行层：隐藏 / 恢复]
+```
+
+- `src/adapters/youtube/`：YouTube URL、DOM 提取、范围、导航事件与网站样式。
+- `src/core/content.js`：统一数据结构与校验；剔除 URL、DOM 等无关字段。
+- `src/core/adapters.js`：适配器注册与匹配。
+- `src/core/decision.js`：与网站和供应商无关的概率阈值决策。
+- `src/providers/jev*.js`：Jev 请求协议、响应解析和网络调用。
+- `src/services/`：可注入分类器的分类服务、缓存、配额与请求队列。
+- `src/content.js`：共享页面扫描、状态管理和隐藏/恢复交互，无 YouTube 选择器。
+- `src/background.js`：后台组装与消息处理，API Key 留在后台。
+- `src/shared/core.js`：配置、规则、存储与摘要工具；保留旧存储键以兼容现有设置。
+
+新增网站只添加适配器、必要的样式和精确域名权限，复用内容协议、分类服务和决策层。适配器由贡献者编写并随扩展打包，不运行远端脚本，也不是任意网站自动识别器。当前没有 X 等其他网站实现或权限。
+
+开发细节见 [架构与接口](docs/architecture.md)、[新增适配器指南](docs/adapters.md) 和 [贡献指南](CONTRIBUTING.md)。
+
+## 从 0.1 升级
+
+原 API Key、规则、阈值和开关保持不变。分类消息改为结构化 `CLASSIFY_CONTENT`；旧会话缓存因版本变化不再复用。重新加载扩展后刷新 YouTube 标签页，以加载新脚本。第一次重新分类可能消耗 API 配额。
